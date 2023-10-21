@@ -1,0 +1,124 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{url}
+
+\title{Formalización del Teorema de Confluencia en el Cálculo Lambda }
+\author{ Naín Cadro}
+\date{September 2023}
+
+\begin{document}
+
+\maketitle
+
+
+\section{ Introducción}
+El cálculo lambda es un sistema formal en matemáticas y ciencias de la computación utilizado para representar funciones y realizar cálculos con ellas. Fue desarrollado por Alonzo Church y Stephen Kleene en la década de 1930 y ha sido fundamental en el desarrollo de la teoría de la computación. Church usó el cálculo lambda en 1936 para resolver el Entscheidungsproblem, también conocido como el problema de la decisión, que plantea el problema de si es posible determinar si un teorema dado tiene una prueba o no.
+
+Uno de los logros más destacados en el ámbito del cálculo lambda y las ciencias de la computación es el teorema de confluencia de Church-Rosser. Este teorema establece una propiedad crucial de los sistemas basados en el cálculo lambda: la propiedad de confluencia. En esencia, esta propiedad asegura que,  las sucesivas reducciones de un término en el cálculo lambda siempre conducirán al mismo resultado, sin importar la elección de un camino particular.
+
+Este trabajo tiene como objetivo presentar un plan meticuloso para formalizar la demostración del teorema de confluencia de Church-Rosser. A lo largo de este documento, delinearemos los pasos clave que se seguirán en este proceso y propondremos un asistente de prueba , el cual sera una herramienta clave para la formalización y desarrollo de la demostración. Además, destacaremos las contribuciones esperadas de esta formalización, que incluyen una mayor comprensión de la demostración y su utilidad en aplicaciones prácticas.
+
+\section{ Preliminares}
+Se introducirá al marco teórico del calculo lambda presentando sus definiciones y propiedades de utilidad para el desarrollo de la demostración del teorema de confluencia de Church-Rosser.
+
+\subsection{Cálculo Lambda}
+
+La sintaxis del cálculo lambda consiste en tres constructores: 
+
+\begin{align*}
+<expr>& ::= \ <var> && \text{variable}\\
+& \ \ |\ \ <expr><expr> && \text{aplicación}\\
+& \ \ |\ \ \ \lambda x . <expr> && \text{abstracción}
+\end{align*}
+
+\vspace{12pt}
+    Una \emph{variable} se representa por un nombre. En este documento usaremos los caracteres x,y,z,w cuando representemos variables. Usaremos e,e0,e1,e2 para referirnos a expresiones del cálculo lambda.\\
+    
+    Una \emph{abstracción}, que también actúa como un \emph{ligador} de variables, se representa como $\lambda$ seguido de una variable y un punto, seguido por un cuerpo que define el comportamiento de la función.  
+Por ejemplo, el siguiente término lambda es una abstracción (y un ligador de la variable x): 
+$\lambda x. x$ \\
+
+
+    Una \emph{aplicación} se representa mediante dos términos juntos. A continuación se brinda un ejemplo: 
+$\lambda x. (\lambda y. xyx) x$
+
+\subsection{Definiciones}
+
+\noindent\textbf{Redex}: Es una expresión de la forma $(\lambda v. e) e'$. \hfill \break
+
+\noindent\textbf{Renombre}: Cambio en $\lambda v. e$ de la variable ligada $v$ (y todas sus ocurrencias) por una variable $v_0$ que no ocurra libre en $e$:
+\[
+\lambda v. e/v \rightarrow v_0 \text{ donde } v_0 \notin \text{ conjunto de las variables libres de la expresion e. }
+\]
+
+\noindent\textbf{Regla de $\beta$-contracción}:  Dado e0 una expresión lambda,  reemplaza en e0 una ocurrencia de un redex $(\lambda v. e)\ e'$ por su contracción (e/v → e’ ), y luego efectúa cero o más renombres de cualquier supresión.
+Notación: Si e1 es el resultado de una $\beta$-contracción de e0, entonces
+escribimos $e0$ $\rightarrow_{\beta}$ $e1$ \hfill \break
+
+\noindent\textbf{Regla de $\beta$-reducción}: Realizar cero o más veces una $\beta$-contracción $\rightarrow_{\beta}$. La denotaremos por $\rightarrow_{\textasteriskcentered}$ \hfill \break
+
+\noindent\textbf{$\beta$-reducción paralela}:
+La noción de $\beta$-reducción paralela es obtenida de la prueba simple del teorema de Church-Rosser realizada por Tait y Martin Löf. Intuitivamente significa reducir un numero de redexes existentes en un termino lambda de manera simultanea.\\
+Daremos una definición inductiva extraída del paper "Parallel reductions in
+$\lambda$ calculus" de Masako.  Takahashi\footnote{\url{https://www.sciencedirect.com/science/article/pii/S0890540185710577}}. En esta definicion los caracteres M,N,P,Q,R denotaran terminos lambda arbitrarios y x,y,z,w denotaran variables arbitrarias:
+
+1. $x$ $\Rightarrow_{\beta}$  $x$\\
+
+2. $\lambda x. M$  $\Rightarrow_{\beta}$ $\lambda x. M'$  si $M$ $\rightarrow_{\beta}$ $M'$\\
+
+3. $M$$N$ $\Rightarrow_{\beta}$ $M'$$N'$, si $M$$\Rightarrow_{\beta}$$M'$ y $N$$\Rightarrow_{\beta}$$N'$ \\
+
+4. ($\lambda x. M$)$N$ $\Rightarrow_{\beta}$ $M'[$x$ := $N'$]$ si $M$$\Rightarrow_{\beta}$$M'$ y $N$$\Rightarrow_{\beta}$$N'$ \\
+
+\subsection{Propiedades de $\beta$-reducción paralela}
+Para demostrar el teorema de Confluencia, será de gran utilidad demostrar previamente las siguientes propiedades :
+\begin{align}
+\text{Si}  M \Rightarrow_{\beta} M’ \ &\text{entonces}\ M \Rightarrow_{\beta} M’ \\
+\text{Si} M \Rightarrow_{\beta} M’ \ &\text{entonces}\ M \Rightarrow_{\textasteriskcentered} M’ \\
+\text{Si} M \Rightarrow_{\beta} M’\ ,\ N \Rightarrow_{\beta} N’ \ &\text{entonces}\  M[y:=N] \Rightarrow_{\beta} M’[y:=N’]
+\end{align}
+
+
+
+\section{Teorema de Confluencia de Church-Rosser}
+
+Este teorema establece que, al aplicar reglas de reducción a términos, el orden en el que se eligen las reducciones no influye en el resultado final. Es decir, si hay dos reducciones o secuencias de reducciones distintas que se pueden aplicar al mismo término, entonces existe un término al que se puede llegar a partir de ambos resultados, aplicando secuencias de reducciones adicionales. El teorema fue demostrado en 1936 por Alonzo Church y J. Barkley Rosser.
+
+\subsection{Enunciado}
+Si $M$ $\rightarrow_{\textasteriskcentered}$ $N1$ y $M$ $\rightarrow_{\textasteriskcentered}$ $N2$, entonces existe $M'$ tal que $N1$ $\rightarrow_{\textasteriskcentered}$ $M'$ y $N2$ $\rightarrow_{\textasteriskcentered}$ $M'$
+
+
+\subsection{Esquema de la demostración de Church-Rosser}
+1. A partir de las propiedades dadas en 2.3, demostrar que la reducción es clausura reflexo-transitiva de la reducción paralela.
+ Esto nos permite reescribir el enunciado del teorema de Confluencia en términos de $\beta$-reducción paralela.\hfill \break
+ 
+\noindent 2. Enunciamos el teorema en términos de la $\beta$-reducción paralela:\hfill \break
+ 
+Sean M, N1, N2, M’ expresiones lambda tales que:
+\begin{align*}
+M \Rightarrow_{\beta} N1\ y\ M \Rightarrow_{\beta} N2\ \text{entonces}
+\ N1 \Rightarrow_{\beta} M'\ y\ N2 \Rightarrow_{\beta} M'
+\end{align*}
+
+\noindent 3. Notar que se puede probar de forma mas fácil  la siguiente declaración, la cual es mas fuerte que el enunciado anterior:
+\begin{align}
+ M \Rightarrow_{\beta} N\ \text{implica}\ N \Rightarrow_{\beta} M*
+\end{align}
+
+ donde $M*$ es determinado por $M$ pero independiente de N. \\
+ 
+\noindent Intuitivamente , si M* es obtenido de M contrayendo todos los redexes existentes simultáneamente , M* satisface la deceleración mencionada.
+Esta intuición puede ser fácilmente probada  por inducción:
+
+3.1 Definimos M* por inducción en el termino lambda M. \\
+
+3.2 Se puede verificar (4) por inducción en M. \\
+ 
+4. Si probamos (4) habremos probado el teorema de Church-Rosser. \\
+
+5. Finalmente, se dará una prueba del teorema escrito en términos de la reducción paralela utilizando un asistente de pruebas.\\
+
+\end{document}

@@ -20,14 +20,13 @@ definition is_reflex :: "('a => 'a => bool) => bool" where
 
 (*... Hint Miguel : probar que si 
   (S \<subseteq> R \<and> R \<subseteq> S* \<and> is_church_rosser R) \<longrightarrow> is_church_rosser S  
-
 donde  S es la relacion \<beta>-contraccion "Step" y R es la relacion de reduccion paralela "ParStep" ...*)
 
-lemma Church_Rosser_Preservation:
+Church_Rosser_Preservation:
   assumes "\<And>a b. S a b \<longrightarrow> R a b"
   assumes "\<And>a b. R a b \<longrightarrow> (Star S) a b"
   assumes "is_church_rosser R"
-  shows "is_church_rosser S"
+  shows "is_church_rosser (Star S)"
 proof (unfold is_church_rosser_def, intro allI impI)
   fix a b1 b2
   assume "S a b1" and "S a b2"
@@ -46,9 +45,26 @@ proof (unfold is_church_rosser_def, intro allI impI)
   have "Star S b2 c" by (simp add: \<open>R b2 c\<close> assms(2))
   (* en este punto deberia poder probar "is_church_rosser (Star S)" *)
   (* esto serviria para probar \<open>S b1 c\<close> y \<open>S b2 c\<close> ? como ?  *)
-    
-   show ?thesis by (rule exI[where x=c]) (simp ad: \<open>S b1 c\<close> \<open>S b2 c\<close>)
-  qed
+
+  ultimately have "is_church_rosser (Star S)" by (simp add: \<open>Star S a b1\<close>  \<open>Star S b1 c\<close>
+ \<open>Star S a b2\<close> \<open>Star S b2 c\<close> )
+
 qed
+
+
+(*Pasos del blueprint*)
+(*Probar las 3 propiedades de la beta reduccion paralela :  *)
+lemma prop1 : "(Step m n) \<longrightarrow> (ParStep m n)"
+ sorry
+
+lemma prop2 : "(ParStep m n) \<longrightarrow> (Star Step) m n"
+ sorry
+
+lemma prop3 : "(ParStep m n) and (Parstep s t) \<longrightarrow> ParStep (subst_term m x s) (subst_term n x t)"
+  sorry
+
+(*Enunciado del Teorema de Confluencia de Church - Rosser*)
+lemma Confluencia : "(Star Step) M N1 \<and> (Star Step) M N2 \<longrightarrow> (\<exists>C. (Star Step) N1 C \<and> (Star Step) N2 C)"
+ sorry
 
 end

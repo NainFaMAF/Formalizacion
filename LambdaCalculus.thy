@@ -74,10 +74,16 @@ proof -
 qed
 type_synonym rel = "exp \<Rightarrow> exp \<Rightarrow> bool"
 
+inductive StarOriginal :: "rel \<Rightarrow> rel" for r where
+   refl : "StarOriginal r a a"
+ | step : "r a b ==> StarOriginal r a b"
+ | trans : "StarOriginal r a b ==> StarOriginal r b c \<Longrightarrow> StarOriginal r a c"
+equivariance StarOriginal
+
 inductive Star :: "rel \<Rightarrow> rel" for r where
    refl : "Star r a a"
  | step : "r a b ==> Star r a b"
- | trans : "Star r a b ==> Star r b c \<Longrightarrow> Star r a c"
+ | trans : "Step  a b ==> Star r b c \<Longrightarrow> Star r a c"
 equivariance Star
 
 inductive ParStep :: "exp \<Rightarrow> exp \<Rightarrow> bool"

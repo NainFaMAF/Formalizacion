@@ -9,7 +9,7 @@ begin
 
 definition is_church_rosser :: "('a => 'a => bool) => bool" where
   "is_church_rosser R \<equiv> \<forall>a b1 b2.
-   Star R a b1 \<and> Star R a b2 \<longrightarrow> (\<exists>c. Star R b1 c \<and> Star R b2 c)"
+   R a b1 \<and> R a b2 \<longrightarrow> (\<exists>c. R b1 c \<and>  R b2 c)"
 
 definition is_trans :: "('a => 'a => bool) => bool" where
  "is_trans R \<equiv> \<forall> x y z. R x y \<and> R y z \<longrightarrow> R x z"
@@ -30,23 +30,19 @@ lemma Church_Rosser_Preservation:
 proof (unfold is_church_rosser_def, intro allI impI)
   fix a b1 b2
   assume "Star S a b1" and "Star S a b2"
-  obtain c where "R b1 c" and "R b2 c"
-    by (metis \<open>S a b1\<close> \<open>S a b2\<close> assms(1) assms(3) is_church_rosser_def)
-  have "R a b1" by (simp add: \<open>S a b1\<close> assms(1)) 
-  moreover
-  have "R a b2" by (simp add: \<open>S a b2\<close> assms(1))
-  moreover
-  have "Star S a b1" by (simp add: assms(2) calculation(1))
-  moreover 
-  have "Star S a b2" by (simp add: assms(2) calculation(2))
-  moreover
-  have "Star S b1 c" by (simp add: \<open>R b1 c\<close> assms(2))
-  moreover 
-  have "Star S b2 c" by (simp add: \<open>R b2 c\<close> assms(2))
-  (* en este punto deberia poder probar "is_church_rosser (Star S)" *)
-  ultimately have "is_church_rosser (Star S)" by (simp add: \<open>Star S a b1\<close>  \<open>Star S b1 c\<close>
- \<open>Star S a b2\<close> \<open>Star S b2 c\<close> )
-
+  then obtain c where "Star S b1 c" and "Star S b2 c" (*En esta linea no pude usar "show", why ? *)
+  proof (induction)
+    case (refl a)
+    then show ?case by (metis Star.refl)
+  next
+    case (step a b)
+    then obtain c1 where "Star S b1 c1" and "Star S b2 c1"
+    using step.IH by blast
+    show ?case by (metis \<open>Star S b1 c1\<close> \<open>Star S b2 c1\<close> assms(2) step.hyps(2))
+  next
+    case (trans a b c)
+    then show ?case sorry
+  qed
 qed
 
 

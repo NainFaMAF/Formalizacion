@@ -9,7 +9,7 @@ begin
 
 definition is_church_rosser :: "('a => 'a => bool) => bool" where
   "is_church_rosser R \<equiv> \<forall>a b1 b2.
-    R a b1 \<and> R a b2 \<longrightarrow> (\<exists>c. R b1 c \<and> R b2 c)"
+   Star R a b1 \<and> Star R a b2 \<longrightarrow> (\<exists>c. Star R b1 c \<and> Star R b2 c)"
 
 definition is_trans :: "('a => 'a => bool) => bool" where
  "is_trans R \<equiv> \<forall> x y z. R x y \<and> R y z \<longrightarrow> R x z"
@@ -22,14 +22,14 @@ definition is_reflex :: "('a => 'a => bool) => bool" where
   (S \<subseteq> R \<and> R \<subseteq> S* \<and> is_church_rosser R) \<longrightarrow> is_church_rosser S  
 donde  S es la relacion \<beta>-contraccion "Step" y R es la relacion de reduccion paralela "ParStep" ...*)
 
-Church_Rosser_Preservation:
+lemma Church_Rosser_Preservation:
   assumes "\<And>a b. S a b \<longrightarrow> R a b"
   assumes "\<And>a b. R a b \<longrightarrow> (Star S) a b"
   assumes "is_church_rosser R"
   shows "is_church_rosser (Star S)"
 proof (unfold is_church_rosser_def, intro allI impI)
   fix a b1 b2
-  assume "S a b1" and "S a b2"
+  assume "Star S a b1" and "Star S a b2"
   obtain c where "R b1 c" and "R b2 c"
     by (metis \<open>S a b1\<close> \<open>S a b2\<close> assms(1) assms(3) is_church_rosser_def)
   have "R a b1" by (simp add: \<open>S a b1\<close> assms(1)) 
@@ -44,8 +44,6 @@ proof (unfold is_church_rosser_def, intro allI impI)
   moreover 
   have "Star S b2 c" by (simp add: \<open>R b2 c\<close> assms(2))
   (* en este punto deberia poder probar "is_church_rosser (Star S)" *)
-  (* esto serviria para probar \<open>S b1 c\<close> y \<open>S b2 c\<close> ? como ?  *)
-
   ultimately have "is_church_rosser (Star S)" by (simp add: \<open>Star S a b1\<close>  \<open>Star S b1 c\<close>
  \<open>Star S a b2\<close> \<open>Star S b2 c\<close> )
 
@@ -60,8 +58,8 @@ lemma prop1 : "(Step m n) \<longrightarrow> (ParStep m n)"
 lemma prop2 : "(ParStep m n) \<longrightarrow> (Star Step) m n"
  sorry
 
-lemma prop3 : "(ParStep m n) and (Parstep s t) \<longrightarrow> ParStep (subst_term m x s) (subst_term n x t)"
-  sorry
+lemma prop3 : "(ParStep m n) \<and> (Parstep s t) \<longrightarrow> ParStep (subst_term m x s) (subst_term n x t)"
+ sorry
 
 (*Enunciado del Teorema de Confluencia de Church - Rosser*)
 lemma Confluencia : "(Star Step) M N1 \<and> (Star Step) M N2 \<longrightarrow> (\<exists>C. (Star Step) N1 C \<and> (Star Step) N2 C)"

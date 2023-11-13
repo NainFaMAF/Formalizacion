@@ -7,9 +7,9 @@ begin
 (* Propiedad Diamante para cualquier relación R : 
  \<forall> x,y,z . R(x,y) & R(x,z) \<Rightarrow> \<exists>c. R(y,c) & R(z,c) *)
 
-definition is_church_rosser :: "('a => 'a => bool) => bool" where
+definition is_church_rosser :: "(exp => exp => bool) => bool" where
   "is_church_rosser R \<equiv> \<forall>a b1 b2.
-   R a b1 \<and> R a b2 \<longrightarrow> (\<exists>c. R b1 c \<and>  R b2 c)"
+    Star R a b1 \<and> Star R a b2 \<longrightarrow> (\<exists>c. Star R b1 c \<and>  Star R b2 c)"
 
 definition is_trans :: "('a => 'a => bool) => bool" where
  "is_trans R \<equiv> \<forall> x y z. R x y \<and> R y z \<longrightarrow> R x z"
@@ -26,24 +26,29 @@ lemma Church_Rosser_Preservation:
   assumes "\<And>a b. S a b \<longrightarrow> R a b"
   assumes "\<And>a b. R a b \<longrightarrow> (Star S) a b"
   assumes "is_church_rosser R"
-  shows "is_church_rosser (Star S)"
+  shows "is_church_rosser (S)"
 proof (unfold is_church_rosser_def, intro allI impI)
   fix a b1 b2
-  assume "Star S a b1" and "Star S a b2"
-  then obtain c where "Star S b1 c" and "Star S b2 c" (*En esta linea no pude usar "show", why ? *)
+  assume "Star S a b1 \<and> Star S a b2"
+  then have "Star S a b1" "Star S a b2" by simp_all
+  then obtain c where "Star S b1 c" and "Star S b2 c" 
   proof (induction)
     case (refl a)
     then show ?case by (metis Star.refl)
   next
     case (step a b)
-    then obtain c1 where "Star S b1 c1" and "Star S b2 c1"
-    using step.IH by blast
-    show ?case by (metis \<open>Star S b1 c1\<close> \<open>Star S b2 c1\<close> assms(2) step.hyps(2))
+    assume "S a b"
+    then obtain c where "Star S b c" and "Star S b2 c"
+      sorry
+    then show ?case sorry
   next
     case (trans a b c)
     then show ?case sorry
   qed
+  then show " \<exists>c. Star S b1 c \<and> Star S b2 c" by auto
 qed
+
+lemma equivalencia :"StarOriginal R = Star R"  
 
 
 (*Pasos del blueprint*)

@@ -50,19 +50,14 @@ proof (unfold is_church_rosser_def, intro allI impI)
         then show ?case using Star.refl by blast
       next
         case (step a b)
-        then show ?case by (meson Star.simps) (* Que significa meson y por que lo uso?*)
+        then show ?case by (meson Star.simps))
       next
         case (trans a b c)
         then show ?case using Star.trans by blast
       qed
-
-  next
+    next
     case (trans a b c)
-    assume "S a b"
-    then have "S a b" by simp
-    then have "Star S b c" using trans.hyps(2) by blast
-    then obtain c' where "Star S c c'" and "Star S b2 c'"  using Star.refl by sledgehammer
-    then show ?case by (metis Star.Star_trans \<open>Star S a c'\<close> \<open>Star S b c\<close> assms(2))
+    then show ?case by sorry
   qed
 
   then show "\<exists>c. Star S b1 c \<and> Star S b2 c" by auto

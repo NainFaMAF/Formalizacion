@@ -36,20 +36,39 @@ proof (unfold is_church_rosser_def, intro allI impI)
     case (refl a)
     then show ?case by (metis Star.refl)
   next
+    (*habria que hacer para este casoy el de trans un lema auxiliar que pruebe S a b \<Rightarrow> Star b c *)
     case (step a b)
     assume "S a b"
-    then obtain c where "Star S b c" and "Star S b2 c"
-      sorry
-    then show ?case sorry
+    then have "S a b" by simp
+    then have "R a b" using assms(1) by blast          (* S contenido en R *)
+    then obtain c where "R b c" and "R a c" using assms(3) by (metis \<open>S a b\<close> is_church_rosser_def)
+    then have "Star S b c" using assms(2) by auto
+    then have "Star S a c" using \<open>R a c\<close> assms(2) by blast
+    then obtain b2 where "Star S a b2"and "Star S b2 c"
+      proof(induction)
+        case (refl a)
+        then show ?case using Star.refl by blast
+      next
+        case (step a b)
+        then show ?case by (meson Star.simps) (* Que significa meson y por que lo uso?*)
+      next
+        case (trans a b c)
+        then show ?case using Star.trans by blast
+      qed
+
   next
     case (trans a b c)
-    then show ?case sorry
+    assume "S a b"
+    then have "S a b" by simp
+    then have "Star S b c" using trans.hyps(2) by blast
+    then obtain c' where "Star S c c'" and "Star S b2 c'"  using Star.refl by sledgehammer
+    then show ?case by (metis Star.Star_trans \<open>Star S a c'\<close> \<open>Star S b c\<close> assms(2))
   qed
-  then show " \<exists>c. Star S b1 c \<and> Star S b2 c" by auto
+
+  then show "\<exists>c. Star S b1 c \<and> Star S b2 c" by auto
 qed
 
 lemma equivalencia :"StarOriginal R = Star R"  
-
 
 (*Pasos del blueprint*)
 (*Probar las 3 propiedades de la beta reduccion paralela :  *)
